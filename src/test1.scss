@@ -1,0 +1,17 @@
+$color1: rgb(62, 147, 204);
+$myColor: rgb(164, 237, 240);
+
+div {
+    width: 200px;
+    height: 200px;
+    background: $myColor;
+    transition: all 2s;
+    margin: 150px auto 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+span{
+    color: $color1;
+    transition: all 2s;
+}
