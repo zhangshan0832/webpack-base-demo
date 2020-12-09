@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-08 18:17:08
+ * @LastEditTime: 2020-12-09 13:51:05
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
@@ -14,10 +14,12 @@ const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 // 抽离css 使用该插件时 必须注释style-loader
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// css 压缩
+// css、js 压缩
 const OptimizeCssPlugin = require("optimize-css-assets-webpack-plugin");
+
 const { resolve } = require("path");
 const webpack = require("webpack");
+console.log("webpack", webpack);
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
 module.exports = {
@@ -27,7 +29,7 @@ module.exports = {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.[hash:6].js",
     // 资源在cdn用 '/',本地用 './'
-    publicPath: "./",
+    publicPath: isDev ? "/" : "./",
   },
   module: {
     rules: [
@@ -41,17 +43,20 @@ module.exports = {
       {
         test: /\.(le|c)ss$/,
         use: [
-          isDev?'style-loader':{
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              // hmr: isDev,
-              // reloadAll: true,
-              publicPath:(resourcePath,context)=>{
-                return path.relative(path.dirname(resourcePath), context) + '/';
-              }
-
-            },
-          },
+          isDev
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  // hmr: isDev,
+                  // reloadAll: true,
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + "/"
+                    );
+                  },
+                },
+              },
           // MiniCssExtractPlugin.loader,
           // "style-loader",
           "css-loader",
@@ -77,16 +82,20 @@ module.exports = {
       {
         test: /\.(sa|sc)ss$/,
         use: [
-          isDev?'style-loader':{
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-              // hmr: isDev,
-              // reloadAll: true,
-              publicPath:(resourcePath,context)=>{
-                return path.relative(path.dirname(resourcePath), context) + '/';
-              }
-            },
-          },
+          isDev
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  // hmr: isDev,
+                  // reloadAll: true,
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + "/"
+                    );
+                  },
+                },
+              },
           // MiniCssExtractPlugin.loader,
           // "style-loader",
           "css-loader",
@@ -125,6 +134,7 @@ module.exports = {
     ],
   },
   plugins: [
+    new webpack.HotModuleReplacementPlugin(),
     new OptimizeCssPlugin(),
     new MiniCssExtractPlugin({
       filename: "css/[name].css",
@@ -164,9 +174,12 @@ module.exports = {
   ],
   devServer: {
     port: "3000", //默认是8080
+    // open:true,
     quiet: false, //默认不启用
     inline: true, //默认开启 inline 模式，如果设置为false,开启 iframe 模式
     stats: "errors-only", //终端仅打印 error
+    hot: true, // 在 plugins 中增加 new webpack.HotModuleReplacementPlugin()
+    // hotOnly:true,
     overlay: false, //默认不启用
     clientLogLevel: "silent", //日志等级
     compress: true, //是否启用 gzip 压缩

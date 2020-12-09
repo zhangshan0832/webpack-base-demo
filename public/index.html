@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-12-08 10:20:10
- * @LastEditTime: 2020-12-08 18:01:08
+ * @LastEditTime: 2020-12-09 13:53:34
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\public\index.html
@@ -16,10 +16,15 @@
     <!-- <link rel="stylesheet" type="text/css" href="//common/css/header.css"> -->
     <% } %>
     <title><%= (htmlWebpackPlugin.options.config.title) %></title>
+    <style>
+        #import{
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
-    <div><span>webpack base demo!</span></div>
+    <div><span id="import">webpack base demo!<%= (htmlWebpackPlugin.options.config.title) %></span></div>
 <script src="./js/base.js"></script>
 <script src="./js/other.js"></script>
 </body>
