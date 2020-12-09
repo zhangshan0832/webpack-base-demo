@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-09 13:51:05
+ * @LastEditTime: 2020-12-09 17:00:45
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
@@ -24,7 +24,10 @@ const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
 module.exports = {
   mode: isDev ? "development" : "production",
-  entry: "./src/index.js",
+  entry: {
+    index: "./src/index.js",
+    login: "./src/login.js",
+  },
   output: {
     path: path.resolve(__dirname, "dist"),
     filename: "bundle.[hash:6].js",
@@ -125,7 +128,7 @@ module.exports = {
             options: {
               limit: 10240,
               esModule: false,
-              outpsth: "assets",
+              outputPath: "assets",
             },
           },
         ],
@@ -142,7 +145,12 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "index.html",
-      config: config.template,
+      chunks:['index']
+    }),
+    new HtmlWebpackPlugin({
+      template: "./public/login.html",
+      filename: "login.html",
+      chunks:['login']
     }),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ["**/*", "!dll", "!dll/**"], //不删除dll目录下的文件
