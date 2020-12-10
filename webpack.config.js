@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-09 17:00:45
+ * @LastEditTime: 2020-12-10 15:25:38
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
@@ -30,7 +30,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, "dist"),
-    filename: "bundle.[hash:6].js",
+    filename: "[name].[hash:6].js",
     // 资源在cdn用 '/',本地用 './'
     publicPath: isDev ? "/" : "./",
   },
