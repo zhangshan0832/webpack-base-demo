@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:11:32
- * @LastEditTime: 2020-12-09 13:52:47
+ * @LastEditTime: 2020-12-11 15:42:27
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\src\index.js
@@ -27,3 +27,28 @@ document.getElementById('import').onclick = function(){
 }
 console.log('$',$)
 const dog = new Animal('dog');
+
+fetch("/api/user")
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+fetch("/login/account", {
+    method: "POST",
+    headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        username: "admin",
+        password: "888888"
+    })
+})
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(err => console.log(err));
+
+console.log($, _map)
+
+$('#login').click(function() {
+    location.href = '/login.html';
+});

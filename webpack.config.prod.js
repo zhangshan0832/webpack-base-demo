@@ -1,0 +1,41 @@
+/*
+ * @Author: your name
+ * @Date: 2020-12-11 15:13:54
+ * @LastEditTime: 2020-12-11 15:30:48
+ * @LastEditors: Please set LastEditors
+ * @Description: In User Settings Edit
+ * @FilePath: \webpack-second\webpack.config.prod.js
+ */
+const {merge} = require("webpack-merge");
+const base = require("./webpack.config.base");
+const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const OptimizeCssPlugin = require("optimize-css-assets-webpack-plugin");
+const TerserWebpackPlugin = require("terser-webpack-plugin");
+const webpack = require("webpack");
+
+module.exports = merge(base, {
+  mode: "production",
+  devtool: "source-map",
+  // optimization: {
+  //     //优化项
+  //     minimizer: [
+  //         new TerserWebpackPlugin({
+  //             test: /\.js(\?.*)?$/i,
+  //             cache: true, //指定cache第一次构建时会略慢
+  //             parallel: 3,
+  //             sourceMap: true
+  //         }),
+  //         new OptimizeCssPlugin()
+  //     ]
+  // },
+  plugins: [
+    new CleanWebpackPlugin({
+      // cleanOnceBeforeBuildPatterns: ['**/*', '!dll', '!dll/**']
+    }),
+    new OptimizeCssPlugin(),
+
+    new webpack.DefinePlugin({
+      DEV: JSON.stringify("production"), //字符串
+    }),
+  ],
+});

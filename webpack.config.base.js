@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-10 15:25:38
+ * @LastEditTime: 2020-12-11 15:39:49
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
@@ -9,13 +9,11 @@
 //webpack.config.js
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 // copy项目文件
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 // 抽离css 使用该插件时 必须注释style-loader
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-// css、js 压缩
-const OptimizeCssPlugin = require("optimize-css-assets-webpack-plugin");
+const apiMocker = require('mocker-api');
 
 const { resolve } = require("path");
 const webpack = require("webpack");
@@ -23,7 +21,7 @@ console.log("webpack", webpack);
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
 module.exports = {
-  mode: isDev ? "development" : "production",
+  mode:"development",
   entry: {
     index: "./src/index.js",
     login: "./src/login.js",
@@ -137,8 +135,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
-    new OptimizeCssPlugin(),
     new MiniCssExtractPlugin({
       filename: "css/[name].css",
     }),
@@ -151,9 +147,6 @@ module.exports = {
       template: "./public/login.html",
       filename: "login.html",
       chunks:['login']
-    }),
-    new CleanWebpackPlugin({
-      cleanOnceBeforeBuildPatterns: ["**/*", "!dll", "!dll/**"], //不删除dll目录下的文件
     }),
     new CopyWebpackPlugin(
       {
@@ -191,13 +184,17 @@ module.exports = {
     overlay: false, //默认不启用
     clientLogLevel: "silent", //日志等级
     compress: true, //是否启用 gzip 压缩
+    before(app){
+      apiMocker(app,path.resolve('./mock/mocker.js'))
+    }
   },
   resolve: {
+    modules:['./src','node_modules'],
     extensions: [".js", ".vue", ".json"],
     alias: {
       vue$: "vue/dist/vue.esm.js",
       "@": resolve("src"),
     },
   },
-  devtool: isDev ? "cheap-module-eval-source-map" : "source-map", //开发环境下使用
+  devtool:  "source-map", //开发环境下使用
 };
