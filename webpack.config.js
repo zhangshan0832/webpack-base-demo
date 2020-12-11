@@ -1,12 +1,13 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-10 15:25:38
+ * @LastEditTime: 2020-12-11 17:57:16
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
  */
 //webpack.config.js
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -22,7 +23,8 @@ const webpack = require("webpack");
 console.log("webpack", webpack);
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
-module.exports = {
+const smp = new SpeedMeasurePlugin()
+let mainConfig = {
   mode: isDev ? "development" : "production",
   entry: {
     index: "./src/index.js",
@@ -38,7 +40,7 @@ module.exports = {
     rules: [
       {
         test: /\.jsx?$/,
-        use: ["babel-loader"],
+        use: ["cache-loader","babel-loader"],
         exclude: /node_modules/, //排除 node_modules 目录
       },
       // sass/less必须分开配置loader
@@ -201,3 +203,6 @@ module.exports = {
   },
   devtool: isDev ? "cheap-module-eval-source-map" : "source-map", //开发环境下使用
 };
+
+
+module.exports = smp.wrap(mainConfig)
