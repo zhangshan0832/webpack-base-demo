@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-12-08 10:17:05
- * @LastEditTime: 2020-12-14 11:26:02
+ * @LastEditTime: 2020-12-14 11:09:24
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \webpack-base\webpack.config.js
@@ -9,10 +9,8 @@
 //webpack.config.js
 const webpack = require("webpack");
 // 把任务分解给多个子进程去并发的执行，子进程处理完后再把结果发送给主进程。
-const Happypack = require("happypack");
-// 为模块间提供缓存
-var HardSourceWebpackPlugin = require('hard-source-webpack-plugin');
-const SpeedMeasurePlugin = require("speed-measure-webpack-plugin");
+const Happypack = require('happypack');
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin')
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
@@ -27,7 +25,7 @@ const { resolve } = require("path");
 console.log("webpack", webpack);
 const isDev = process.env.NODE_ENV === "development";
 const config = require("./public/config")[isDev ? "dev" : "build"];
-const smp = new SpeedMeasurePlugin();
+const smp = new SpeedMeasurePlugin()
 let mainConfig = {
   mode: isDev ? "development" : "production",
   entry: {
@@ -45,98 +43,87 @@ let mainConfig = {
       {
         test: /\.jsx?$/,
         // use: ["cache-loader","babel-loader"],
-        use: "Happypack/loader?id=js",
-        include: [path.resolve(__dirname, "src")],
-        // exclude: /node_modules/, //排除 node_modules 目录
+        use: ['thread-loader',"cache-loader","babel-loader"],
+        exclude: /node_modules/, //排除 node_modules 目录
       },
       // sass/less必须分开配置loader
       // less loader使用
       {
         test: /\.(le|c)ss$/,
-        use: "Happypack/loader?id=css",
-        include: [
-          path.resolve(__dirname, "src"),
-          path.resolve(__dirname, "node_modules", "bootstrap", "dist"),
+        use: [
+          isDev
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  // hmr: isDev,
+                  // reloadAll: true,
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + "/"
+                    );
+                  },
+                },
+              },
+          // MiniCssExtractPlugin.loader,
+          // "style-loader",
+          "css-loader",
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: function () {
+                  return [
+                    require("autoprefixer")({
+                      overrideBrowserslist: [">0.25%", "not dead"],
+                    }),
+                  ];
+                },
+              },
+            },
+          },
+          "less-loader",
         ],
-        // use: [
-        //   isDev
-        //     ? "style-loader"
-        //     : {
-        //         loader: MiniCssExtractPlugin.loader,
-        //         options: {
-        //           // hmr: isDev,
-        //           // reloadAll: true,
-        //           publicPath: (resourcePath, context) => {
-        //             return (
-        //               path.relative(path.dirname(resourcePath), context) + "/"
-        //             );
-        //           },
-        //         },
-        //       },
-        //   // MiniCssExtractPlugin.loader,
-        //   // "style-loader",
-        //   "css-loader",
-        //   {
-        //     loader: "postcss-loader",
-        //     options: {
-        //       postcssOptions: {
-        //         plugins: function () {
-        //           return [
-        //             require("autoprefixer")({
-        //               overrideBrowserslist: [">0.25%", "not dead"],
-        //             }),
-        //           ];
-        //         },
-        //       },
-        //     },
-        //   },
-        //   "less-loader",
-        // ],
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
       },
       // sass loader使用
       {
         test: /\.(sa|sc)ss$/,
-        use: "Happypack/loader?id=scss",
-        include: [
-          path.resolve(__dirname, "src"),
-          path.resolve(__dirname, "node_modules", "bootstrap", "dist"),
+        use: [
+          isDev
+            ? "style-loader"
+            : {
+                loader: MiniCssExtractPlugin.loader,
+                options: {
+                  // hmr: isDev,
+                  // reloadAll: true,
+                  publicPath: (resourcePath, context) => {
+                    return (
+                      path.relative(path.dirname(resourcePath), context) + "/"
+                    );
+                  },
+                },
+              },
+          // MiniCssExtractPlugin.loader,
+          // "style-loader",
+          "css-loader",
+          {
+            loader: "postcss-loader",
+            options: {
+              postcssOptions: {
+                plugins: function () {
+                  return [
+                    require("autoprefixer")({
+                      overrideBrowserslist: [">0.25%", "not dead"],
+                    }),
+                  ];
+                },
+              },
+            },
+          },
+          "sass-loader",
         ],
-        // use: [
-        //   isDev
-        //     ? "style-loader"
-        //     : {
-        //         loader: MiniCssExtractPlugin.loader,
-        //         options: {
-        //           // hmr: isDev,
-        //           // reloadAll: true,
-        //           publicPath: (resourcePath, context) => {
-        //             return (
-        //               path.relative(path.dirname(resourcePath), context) + "/"
-        //             );
-        //           },
-        //         },
-        //       },
-        //   // MiniCssExtractPlugin.loader,
-        //   // "style-loader",
-        //   "css-loader",
-        //   {
-        //     loader: "postcss-loader",
-        //     options: {
-        //       postcssOptions: {
-        //         plugins: function () {
-        //           return [
-        //             require("autoprefixer")({
-        //               overrideBrowserslist: [">0.25%", "not dead"],
-        //             }),
-        //           ];
-        //         },
-        //       },
-        //     },
-        //   },
-        //   "sass-loader",
-        // ],
-        // exclude: /node_modules/,
+        exclude: /node_modules/,
       },
       {
         test: /\.(png|jpg|gif|jpeg|webp|svg|eot|ttf|woff|woff2)$/,
@@ -155,34 +142,20 @@ let mainConfig = {
     ],
   },
   plugins: [
-    new HardSourceWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new OptimizeCssPlugin(),
-    new Happypack({
-      id: "js", //和rule中的id=js对应
-      //将之前 rule 中的 loader 在此配置
-      use: ["babel-loader"], //必须是数组
-    }),
-    new Happypack({
-      id: "css",
-      use: ["style-loader", "css-loader", "postcss-loader", "less-loader"],
-    }),
-    new Happypack({
-      id: "scss",
-      use: ["style-loader", "css-loader", "postcss-loader", "sass-loader"],
-    }),
     new MiniCssExtractPlugin({
       filename: "css/[name].css",
     }),
     new HtmlWebpackPlugin({
       template: "./public/index.html",
       filename: "index.html",
-      chunks: ["index"],
+      chunks:['index']
     }),
     new HtmlWebpackPlugin({
       template: "./public/login.html",
       filename: "login.html",
-      chunks: ["login"],
+      chunks:['login']
     }),
     new CleanWebpackPlugin({
       cleanOnceBeforeBuildPatterns: ["**/*", "!dll", "!dll/**"], //不删除dll目录下的文件
@@ -234,4 +207,5 @@ let mainConfig = {
   devtool: isDev ? "cheap-module-eval-source-map" : "source-map", //开发环境下使用
 };
 
-module.exports = smp.wrap(mainConfig);
+
+module.exports = smp.wrap(mainConfig)
